@@ -16,6 +16,7 @@ public class szamologepGUI implements ActionListener{
 	JButton torlesGomb;
 	String input;
 	boolean kiszamolva = false;
+	boolean idiot = false;
 	
 	szamologepGUI() {
 	createFrame();
@@ -117,14 +118,14 @@ public class szamologepGUI implements ActionListener{
     }
 	// "=" gombhoz, műveletek kiszámítása metódus
 	public int szamolgatas(String muvelet) {  
-			int eredmeny;
-			
-	        	// Műveletek szétválogatása szam + muvelet + szam -ra
+				
+				int eredmeny;
+	        	// Muveletek szetvalogatasa szam + muvelet + szam - ra
 				String[] reszek = muvelet.split(" ");
 	        	int kiskijelzoSzam = Integer.parseInt(reszek[0]);
 	            String operator = reszek[1];
 	            int kijelzoSzam = Integer.parseInt(reszek[2]);
-	            
+	            // Mivan ha +, - , *, /
 	            switch (operator) {
 	                case "+":
 	                	kiskijelzoSzam += kijelzoSzam;
@@ -136,15 +137,19 @@ public class szamologepGUI implements ActionListener{
 	                	kiskijelzoSzam *= kijelzoSzam;
 	                    break;
 	                case "/":
-	                    if (kijelzoSzam != 0) {
+	                    if (kiskijelzoSzam != 0) {
 	                    	kiskijelzoSzam /= kijelzoSzam;
 	                    } else {
-	                        throw new ArithmeticException("Nullával való osztás!");
+	                    	//Ha a "kiskijelzoSzam" erteke 0, akkor hibaüzenet (nem osztunk 0-val)
+	                    	 kiskijelzo.setText("Barom!");
+	                         kijelzo.setText("Nullával nem osztunk!!");
+	                         idiot = true;
+	                         return 0;
 	                    }
 	                    break;
 	            }
-	        eredmeny = kiskijelzoSzam;
-	   return eredmeny;
+	            eredmeny = kiskijelzoSzam;
+	            return eredmeny;
 	}
 	//Eksönz
 	public void actionPerformed(ActionEvent e) {
@@ -154,76 +159,140 @@ public class szamologepGUI implements ActionListener{
 	switch (gombnyomas) {
 	
 		case "C":
+			//0-val osztas utan torli a kepernyot
+			if (idiot) {
+        		kiskijelzo.setText("");
+        		kijelzo.setText("0");
+        		idiot = false;
+        	//"kijelzo" 0-ra allitasa
+			} else {
 	        kijelzo.setText("0");
+			}
 			break;
 			
-        case "<": 
-        	   if (!kijelzo.getText().equals("0") && kijelzo.getText().length() > 1) {
-                   input = kijelzo.getText().substring(0, kijelzo.getText().length() - 1);
-                   kijelzo.setText(input);
-                   kiskijelzo.setText("");
-               } else {
-               	   kijelzo.setText("0");
-               	   kiskijelzo.setText("");
-               }
-               break;
-            
-        case "DEL": 
+        case "<":
+        	//0-val osztas utan torli a kepernyot
+        	if (idiot) {
+        		kiskijelzo.setText("");
         		kijelzo.setText("0");
+        		idiot = false;
+        	//Az utolso szamjegyet torli ha tobb mint 1 szamjegy van a "kijelzo"-n
+        	} else if (!kijelzo.getText().equals("0") && kijelzo.getText().length() > 1) {
+                input = kijelzo.getText().substring(0, kijelzo.getText().length() - 1);
+                kijelzo.setText(input);
+            //Ha egy db szamjegy van a "kijelzo"-n 0-ra allitja
+            } else {
+           	    kijelzo.setText("0");
+            }
+            break;
+            
+        case "DEL":
+        		//Alapra allit mindent
+    			kijelzo.setText("0");
         		kiskijelzo.setText("");
         		break;
             
         case "=":
-        	if (kiszamolva) {
+          try {
+        	//0-val osztas utan torli a kepernyot
+        	if (idiot) {
+        		kiskijelzo.setText("");
+        		kijelzo.setText("0");
+        		kiszamolva = true;
+        		idiot = false;
+        	//Kiszamolt eredmeny utan kinthagyja az eredmenyt a "kijelzo"-n esetleges tovabbi felhasznalas celjabol
+        	} else if (kiszamolva) {
         		kiskijelzo.setText("");
         		kijelzo.setText(kijelzo.getText());
+        	//Kiszamolja a letrehozott "szamolgatas" metodus alapjan az eredmenyt
         	} else if (!kijelzo.getText().isEmpty() && !kiskijelzo.getText().isEmpty()) {
                 String muvelet = kiskijelzo.getText() + kijelzo.getText();
+                //Ha 0-val osztas van hiba!
+                if (szamolgatas(muvelet) == 0) {
+                    return;
+                }
                 int eredmeny = szamolgatas(muvelet);
                 kiskijelzo.setText(muvelet + " =");
                 kijelzo.setText(Integer.toString(eredmeny));
                 kiszamolva = true;
-            }
+        	}
+          } catch (ArithmeticException hiba) {
+        		kiskijelzo.setText("Barom!");
+        		kijelzo.setText("Nullaval nem osztunk!!");
+        		idiot = true;
+          }
             break;
         	
         case "+":
-        	if (kiskijelzo.getText().isEmpty() || kiszamolva) {
+        	//0-val osztas utan torli a kepernyot
+        	if (idiot) {
+        		kiskijelzo.setText("");
+        		kijelzo.setText("0");
+        		idiot = false;
+        	//A lenti "kijelzo"-n levo erteket es ezt a muveleti jelet felteszi a "kiskijelzo"-re	
+        	} else if (kiskijelzo.getText().isEmpty() || kiszamolva) {
         		kiskijelzo.setText(kijelzo.getText() + " " + gombnyomas.toString() + " ");
         		kijelzo.setText("0");
         		kiszamolva = false;
-        	} else if (!kiskijelzo.getText().isEmpty()) 
+        	//Muveleti jel csereje a felso "kiskijelzo"-n
+        	} else if (!kiskijelzo.getText().isEmpty()) {
         		input = kiskijelzo.getText().substring(0, kiskijelzo.getText().length() - 3);
         		kiskijelzo.setText(input + " " + gombnyomas.toString() + " ");
+        	}
         break;
         
         case "-":
-        	if (kiskijelzo.getText().isEmpty() || kiszamolva) {
+        	//0-val osztas utan torli a kepernyot
+        	if (idiot) {
+        		kiskijelzo.setText("");
+        		kijelzo.setText("0");
+        		idiot = false;
+        	//A lenti "kijelzo"-n levo erteket es ezt a muveleti jelet felteszi a "kiskijelzo"-re
+        	} else if (kiskijelzo.getText().isEmpty() || kiszamolva) {
         		kiskijelzo.setText(kijelzo.getText() + " " + gombnyomas.toString() + " ");
         		kijelzo.setText("0");
         		kiszamolva = false;
-        	} else if (!kiskijelzo.getText().isEmpty()) 
+        	//Muveleti jel csereje a felso "kiskijelzo"-n
+        	} else if (!kiskijelzo.getText().isEmpty()) {
         		input = kiskijelzo.getText().substring(0, kiskijelzo.getText().length() - 3);
         		kiskijelzo.setText(input + " " + gombnyomas.toString() + " ");
+        	}
         break;
         
         case "*":
-        	if (kiskijelzo.getText().isEmpty() || kiszamolva) {
+        	//0-val osztas utan torli a kepernyot
+        	if (idiot) {
+        		kiskijelzo.setText("");
+        		kijelzo.setText("0");
+        		idiot = false;
+        	//A lenti "kijelzo"-n levo erteket es ezt a muveleti jelet felteszi a "kiskijelzo"-re
+        	} else if (kiskijelzo.getText().isEmpty() || kiszamolva) {
         		kiskijelzo.setText(kijelzo.getText() + " " + gombnyomas.toString() + " ");
         		kijelzo.setText("0");
         		kiszamolva = false;
-        	} else if (!kiskijelzo.getText().isEmpty()) 
+        	//Muveleti jel csereje a felso "kiskijelzo"-n
+        	} else if (!kiskijelzo.getText().isEmpty()) {
         		input = kiskijelzo.getText().substring(0, kiskijelzo.getText().length() - 3);
         		kiskijelzo.setText(input + " " + gombnyomas.toString() + " ");
+        	}
         break;
         
         case "/":
-         	if (kiskijelzo.getText().isEmpty() || kiszamolva) {
+        	//0-val osztas utan torli a kepernyot
+        	if (idiot) {
+        		kiskijelzo.setText("");
+        		kijelzo.setText("0");
+        		idiot = false;
+        	//A lenti "kijelzo"-n levo erteket es ezt a muveleti jelet felteszi a "kiskijelzo"-re	
+        	} else if (kiskijelzo.getText().isEmpty() || kiszamolva) {
         		kiskijelzo.setText(kijelzo.getText() + " " + gombnyomas.toString() + " ");
         		kijelzo.setText("0");
         		kiszamolva = false;
-        	} else if (!kiskijelzo.getText().isEmpty()) 
+        	//Muveleti jel csereje a felso "kiskijelzo"-n
+        	} else if (!kiskijelzo.getText().isEmpty()) {
         		input = kiskijelzo.getText().substring(0, kiskijelzo.getText().length() - 3);
         		kiskijelzo.setText(input + " " + gombnyomas.toString() + " ");
+        	}
         break;
         
         case "0":
@@ -236,16 +305,24 @@ public class szamologepGUI implements ActionListener{
         case "7":
         case "8":
         case "9":
-        	if (kiszamolva) {
+        	//0-val osztas utan az adott erteket beirja a "kijelzo"-re
+        	if (idiot) {
+        		kiskijelzo.setText("");
+        		kijelzo.setText(gombnyomas.toString());
+        		idiot = false;
+        	//"=" utan az adott erteket beirja a "kijelzo"-re
+        	} else if (kiszamolva) {
         		kiskijelzo.setText("");
         		kijelzo.setText(gombnyomas.toString());
         		kiszamolva = false;
+        	//Szamok beirasa a "kijelzo"-re egymas utan	
         	} else if (!kijelzo.getText().equals("0")) {
         		int ertek = Integer.parseInt(kijelzo.getText());
         		int gombErtek = Integer.parseInt(gombnyomas.toString());
         		input = Integer.toString(ertek * 10 + gombErtek);
         		kijelzo.setText(input);
-        	}  else {
+        	//Szam beirasa a "kijelzo"-re	
+        	} else {
         		kijelzo.setText(gombnyomas.toString());
         	}
         break;

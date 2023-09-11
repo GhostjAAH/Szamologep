@@ -117,14 +117,13 @@ public class szamologepGUI implements ActionListener{
 	    frame.revalidate();
     }
 	// "=" gombhoz, műveletek kiszámítása metódus
-	public int szamolgatas(String muvelet) {  
-				
-				int eredmeny;
-	        	// Muveletek szetvalogatasa szam + muvelet + szam - ra
-				String[] reszek = muvelet.split(" ");
-	        	int kiskijelzoSzam = Integer.parseInt(reszek[0]);
-	            String operator = reszek[1];
-	            int kijelzoSzam = Integer.parseInt(reszek[2]);
+	public String szamolgatas(String muvelet) {  
+
+	        // Muveletek szetvalogatasa szam + muvelet + szam - ra
+			String[] reszek = muvelet.split(" ");
+	        int kiskijelzoSzam = Integer.parseInt(reszek[0]);
+	        String operator = reszek[1];
+	        int kijelzoSzam = Integer.parseInt(reszek[2]);
 	            // Mivan ha +, - , *, /
 	            switch (operator) {
 	                case "+":
@@ -141,15 +140,11 @@ public class szamologepGUI implements ActionListener{
 	                    	kiskijelzoSzam /= kijelzoSzam;
 	                    } else {
 	                    	//Ha a "kiskijelzoSzam" erteke 0, akkor hibaüzenet (nem osztunk 0-val)
-	                    	 kiskijelzo.setText("Barom!");
-	                         kijelzo.setText("Nullával nem osztunk!!");
-	                         idiot = true;
-	                         return 0;
+	                         return "nemjau";
 	                    }
 	                    break;
 	            }
-	            eredmeny = kiskijelzoSzam;
-	            return eredmeny;
+	            return Integer.toString(kiskijelzoSzam);
 	}
 	//Eksönz
 	public void actionPerformed(ActionEvent e) {
@@ -207,14 +202,17 @@ public class szamologepGUI implements ActionListener{
         	//Kiszamolja a letrehozott "szamolgatas" metodus alapjan az eredmenyt
         	} else if (!kijelzo.getText().isEmpty() && !kiskijelzo.getText().isEmpty()) {
                 String muvelet = kiskijelzo.getText() + kijelzo.getText();
+                String eredmeny = szamolgatas(muvelet);
                 //Ha 0-val osztas van hiba!
-                if (szamolgatas(muvelet) == 0) {
-                    return;
+                if(eredmeny.equals("nemjau")) {
+                	kiskijelzo.setText("Barom!");
+                    kijelzo.setText("Nullaval nem osztunk!!");
+                    idiot = true;
+                } else {
+                	kiskijelzo.setText(muvelet + " =");
+                	kijelzo.setText(eredmeny);
+                	kiszamolva = true;
                 }
-                int eredmeny = szamolgatas(muvelet);
-                kiskijelzo.setText(muvelet + " =");
-                kijelzo.setText(Integer.toString(eredmeny));
-                kiszamolva = true;
         	}
           } catch (ArithmeticException hiba) {
         		kiskijelzo.setText("Barom!");

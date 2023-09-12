@@ -50,11 +50,11 @@ public class szamologepGUI implements ActionListener{
 		gomb.setForeground(new Color(255, 69, 0));
 	}
 	//JButton (torlesGomb) beállításai
-/*	public void torlesgombSettings() {
+	public void torlesgombSettings() {
 		torlesGomb.setFont(new Font("Oswald", Font.PLAIN, 30));
 		torlesGomb.setBackground(Color.LIGHT_GRAY);
 		torlesGomb.setForeground(new Color(255, 69, 0));
-	} */
+	} 
 	//JPanel (panel) beállításai
 	public void panelSettings() {
 		panel = new JPanel();
@@ -72,12 +72,12 @@ public class szamologepGUI implements ActionListener{
 	    };
 
 	    for (String label : buttonLabels) {
-	   /* 	if (label.equals("<")) {
+	    	if (label.equals("<")) {
 	    		torlesGomb = new JButton("\u2190");
 	    		torlesGomb.addActionListener(this);
 	    		torlesgombSettings();
 	    		panel.add(torlesGomb);
-	    	} else */ if (!label.isEmpty()) {
+	    	} else if (!label.isEmpty()) {
 	    		gomb = new JButton(label);
 	    		gomb.addActionListener(this);
 	    		buttonSettings();
@@ -165,7 +165,7 @@ public class szamologepGUI implements ActionListener{
 			}
 			break;
 			
-        case "<":
+        case "\u2190": //"<"
         	//0-val osztas utan torli a kepernyot
         	if (idiot) {
         		kiskijelzo.setText("");
